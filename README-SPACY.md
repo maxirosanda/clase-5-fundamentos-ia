@@ -1,81 +1,63 @@
-# Guion del ejercicio en vivo: Clasificación de texto con IA en Colab (datos de Kaggle)
+# Guion del ejercicio en vivo: Análisis y clasificación de datos con Python en Google Colab
 
-Ejercicio separado, **live-demo grabado** (~70 min) en Google Colab. Cargás un dataset real de Kaggle, extraés entidades con spaCy, clasificás los textos con un transformer y medís qué tan bien lo hace con métricas. Los alumnos miran y replican con el video. Método: **prompteás al chat de IA → copiás → pegás en la celda → corrés → verificás.**
+Ejercicio práctico realizado en Google Colab donde trabajaremos con un dataset real obtenido desde Kaggle. A lo largo de la actividad exploraremos los datos, realizaremos tareas de limpieza y preprocesamiento, construiremos modelos de clasificación supervisada y evaluaremos su desempeño mediante métricas estándar de Machine Learning.
 
-> Es el segmento más técnico del módulo (el que dijimos que se siente avanzado para fundamentos). En modo demo y copiando/pegando corre sin que te trabes; el riesgo no es técnico sino **abrumar** a un público principiante. Como ellos igual leen el material para el multiple choice, alcanza con mostrar que existe y que se puede correr, sin enseñarlo a fondo.
-
----
-
-## Qué suma este ejercicio
-
-Lleva la cobertura de los dos guiones anteriores de ~50% a **~70-75%**, sumando:
-
-- Limpieza y extracción de entidades con spaCy (NER).
-- Clasificación con un transformer preentrenado (zero-shot).
-- Métricas NLP: precisión, recall, F1 y alerta por umbral.
-- Diseño conversacional / intents (como puente: la misma técnica clasifica intents en un chatbot).
-- Mención de sesgos sobre el clasificador.
-
-*Siguen afuera, porque no entran natural en un Colab: codemods/refactor, tests/regresión, mockups con Galileo/Uizard, documentación de producto y monitoreo.*
+El objetivo es recorrer un flujo completo de trabajo en Ciencia de Datos, desde la carga de información hasta la validación de resultados, utilizando herramientas ampliamente empleadas en entornos profesionales.
 
 ---
 
-## El dataset
+## Qué aprenderás en este ejercicio
 
-**News Category Dataset** de Kaggle (`rmisra/news-category-dataset`), el mismo que tu material enlaza para spaCy: https://www.kaggle.com/datasets/rmisra/news-category-dataset
+Durante la práctica se trabajarán los siguientes conceptos:
 
-Es ideal porque cada registro trae el **texto** (`headline`, `short_description`) para el NER, y la **categoría real** (`category`) que sirve de etiqueta verdadera para medir las métricas. Está en inglés, así que usás el modelo `en_core_web_sm`.
-
----
-
-## Prep off-camera (clave, hacelo antes de grabar)
-
-- Colab abierto. **Activá GPU** (Runtime → Change runtime type → GPU): el transformer corre mucho más rápido.
-- **Acceso a Kaggle resuelto de antemano:** subí tu `kaggle.json` y configuralo, o tené el archivo del dataset ya en tu Google Drive listo para montar. **No muestres el token de Kaggle en cámara.**
-- **Reducí el dataset:** quedate con 4-5 categorías y una muestra chica (~100-150 filas) balanceada. Nunca corras el transformer sobre las ~200k filas completas.
-- **Corré todo una vez antes de grabar:** que el modelo zero-shot baje y funcione (la primera descarga tarda).
-
----
-
-## El flujo del notebook
-
-`Cargar dataset (Kaggle)` → `Filtrar + muestrear` → `spaCy NER` → `Clasificar con transformer (zero-shot)` → `Métricas (P/R/F1 + alerta)`
+* Carga de datasets reales desde Kaggle.
+* Exploración y comprensión de datos (EDA).
+* Detección de valores faltantes y análisis de calidad de datos.
+* Preprocesamiento de variables numéricas y categóricas.
+* Selección de variables relevantes.
+* División de datos en conjuntos de entrenamiento y prueba.
+* Entrenamiento de modelos de clasificación.
+* Comparación entre distintos algoritmos.
+* Evaluación mediante Accuracy, Precision, Recall y F1-Score.
+* Interpretación de resultados utilizando matrices de confusión.
 
 ---
 
-## Guion minuto a minuto (~71 min)
+## Dataset utilizado
 
-Flujo de cada celda: prompteás al chat → pegás en Colab → corrés → mostrás la salida.
+Se utilizará un dataset real disponible en Kaggle que contiene información suficiente para construir un problema de clasificación supervisada.
 
-| # | Segmento | Min | Qué hacés | Conceptos |
-|---|---|---|---|---|
-| 0 | **Visión** | 4' | Explicás: vamos a clasificar texto real y medir qué tan bien lo hace un modelo. Abrís el notebook. | Visión del pipeline NLP |
-| 1 | **Cargar datos de Kaggle** — *riesgo* | 10' | Corrés la celda de descarga (Kaggle API ya configurada) o montás el archivo desde Drive. Cargás el JSONL con pandas (`read_json(..., lines=True)`) y mostrás las columnas. | Ingestión de datos, datasets reales |
-| 2 | **Filtrar + muestrear** | 6' | Prompteás y pegás código para quedarte con 4-5 categorías y ~100 filas. Explicás por qué muestreás (velocidad de inferencia en vivo). | Preparación de datos |
-| 3 | **NER con spaCy** | 12' | Instalás spaCy + `en_core_web_sm`. Prompteás un script que normalice el texto y extraiga entidades (PERSON/ORG/GPE) de los titulares; lo pegás, corrés y mostrás las entidades. | Limpieza/normalización, spaCy, NER |
-| 4 | **Clasificación con transformer** — *riesgo* | 15' | Prompteás el pipeline zero-shot de HuggingFace (`bart-large-mnli`) usando tus 4-5 categorías como `candidate_labels`. Lo corrés sobre la muestra y mostrás la etiqueta predicha al lado de la real. | Transformers, clasificación semántica |
-| 5 | **Métricas** | 12' | Prompteás código que compara predicho vs. real y calcula precisión/recall/F1 (con `sklearn` o a mano), e imprime una **alerta si una métrica cae bajo un umbral** (ej. 0.7). | Métricas NLP, alertas, evaluación de modelos |
-| 6 | **Puente a intents + sesgos** | 8' | Conectás: "esta misma técnica es la que clasifica los intents de un chatbot". Comentás 1-2 sesgos posibles (categorías sub-representadas, sesgos del modelo preentrenado). | Diseño conversacional/intents, ética/sesgos |
-| 7 | **Cierre + recap** | 4' | Recapitulás los conceptos: spaCy, transformers, métricas, intents. | Visión del pipeline |
+El dataset incluye:
 
-**Total:** ~71 minutos.
+* Variables predictoras (features).
+* Una variable objetivo (target) a predecir.
+* Registros suficientes para evaluar el desempeño de distintos modelos.
 
 ---
 
-## Riesgos y contingencias
+## Flujo general del notebook
 
-- **#1 – Acceso a Kaggle / token en cámara.** Resuelto antes de grabar; nunca muestres el `kaggle.json`. Si la API falla, tené el archivo en Drive como respaldo.
-- **#2 – Tamaño del dataset.** Son ~200k filas. Filtrá y muestreá **siempre**; correr el transformer sobre todo el dataset cuelga la clase.
-- **#3 – Tiempo de inferencia.** Con GPU y ~100 filas, corre en segundos. Sin GPU, reducí la muestra a 30-50.
-- **Descarga del modelo.** La primera vez `bart-large-mnli` tarda en bajar; corrélo antes de grabar para que esté cacheado en la sesión.
-- **Salida del modelo.** Si el formato no es el esperado, re-prompteá; mostralo como momento didáctico pero mantenelo corto.
+`Carga del dataset` → `Análisis exploratorio` → `Limpieza y preparación de datos` → `Selección de variables` → `Entrenamiento de modelos` → `Evaluación de métricas` → `Conclusiones`
 
 ---
 
-## Tips para que el video sea replicable
+## Guion de la actividad
 
-- Mostrá el `head()` del dataframe para que vean los datos reales de Kaggle.
-- Poné la predicción y la etiqueta real lado a lado: ahí se entiende qué mide cada métrica.
-- Leé cada prompt en voz alta antes de mandarlo.
-- Mencioná que activaste GPU y por qué (los alumnos lo van a necesitar al replicar).
-- Cerrá mostrando la tabla de métricas con la alerta: es lo concreto que conecta con lo que leen en el material.
+| # | Segmento                     | Qué se realiza                                                     | Conceptos              |
+| - | ---------------------------- | ------------------------------------------------------------------ | ---------------------- |
+| 1 | Carga de datos               | Descarga y lectura del dataset desde Kaggle                        | Ingesta de datos       |
+| 2 | Exploración inicial          | Análisis de estructura, tipos de datos y estadísticas descriptivas | EDA                    |
+| 3 | Calidad de datos             | Identificación de nulos, duplicados y posibles inconsistencias     | Limpieza               |
+| 4 | Preparación de variables     | Transformación de variables numéricas y categóricas                | Preprocesamiento       |
+| 5 | Selección de características | Identificación de variables más relevantes                         | Feature Selection      |
+| 6 | Entrenamiento de modelos     | Construcción de modelos de clasificación                           | Machine Learning       |
+| 7 | Evaluación                   | Accuracy, Precision, Recall, F1 y matriz de confusión              | Métricas               |
+| 8 | Conclusiones                 | Interpretación de resultados y comparación de modelos              | Análisis de resultados |
+
+---
+
+## Resultados esperados
+
+Al finalizar el ejercicio, el estudiante habrá implementado un flujo completo de Machine Learning supervisado y podrá interpretar el desempeño de un modelo utilizando métricas objetivas y herramientas de visualización.
+
+Además, comprenderá cómo transformar datos reales en información útil para apoyar procesos de toma de decisiones basados en evidencia.
